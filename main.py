@@ -14,7 +14,7 @@ class User:  # create class to use set feature(ignore non-unique object)
     def __members(self):  # create centralized method to easily change key properties
         return self.info['name'], self.info['time_created']
 
-    def __eq__(self, other):  # customize dunder method so if name and time of creation the same it’s the same user
+    def __eq__(self, other):  # check equality by name and time of creation
         if type(other) is type(self):
             return self.__members() == other.__members()
         else:
@@ -50,18 +50,18 @@ for user in users:
         properties[key].append(user.info[key]) if user.info[key] is not None else None
 
 default_values = {}  # dictionary of all keys with default values according to task
-for key in properties.items():  # iterate through all possible keys
+for key, value in properties.items():  # iterate through all possible keys
     if isinstance(key, bool):  # firstly check bool to not handle with as int
-        default_values[key] = None  # not int or string so None
-    elif isinstance(key, int):  # if int
+        default_values[key] = None
+    elif isinstance(key, int):
         # get average and round the amount down
-        default_values[key] = int(reduce(lambda x, y: x + y, properties[key]) / len(properties[key]))
-    elif isinstance(key, float):  # if float
-        default_values[key] = reduce(lambda x, y: x + y, properties[key]) / len(properties[key])  # get average
-    elif isinstance(key, str):  # if string
-        default_values[key] = Counter(properties[key]).most_common(1)[0][0]  # get most common
+        default_values[key] = int(reduce(lambda x, y: x + y, value) / len(value))
+    elif isinstance(key, float):
+        default_values[key] = reduce(lambda x, y: x + y, value) / len(value)  # get average
+    elif isinstance(key, str):
+        default_values[key] = Counter(value).most_common(1)[0][0]  # get most common
     else:
-        default_values[key] = None  # not int or string so None
+        default_values[key] = None
 
 prepared_to_json_users = defaultdict(list)  # dictionary of '{year}-{month}-{day}' with matching user`s infos
 for user in users:
@@ -79,5 +79,3 @@ for key, value in prepared_to_json_users.items():
     with open(str(key) + ".jsonl", "x") as file:  # create file
         for user in value:
             file.write('\n' + json.dumps(user))  # add users to file enter-separated
-
-print(isinstance(122.3, int))
