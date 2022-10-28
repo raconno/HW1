@@ -41,6 +41,7 @@ for user_json in file:
     # convert time stamp to datetime object
     user.info['time_created'] = datetime.datetime.fromtimestamp(user.info['time_created'])
     users.add(user)  # eliminate duplicates
+file.close()
 
 properties = defaultdict(list)  # dictionary of all keys with lists of all not None values
 for user in users:
@@ -49,12 +50,14 @@ for user in users:
         properties[key].append(user.info[key]) if user.info[key] is not None else None
 
 default_values = {}  # dictionary of all keys with default values according to task
-for key in properties.keys():  # iterate through all possible keys
+for key in properties.items():  # iterate through all possible keys
     if isinstance(key, bool):  # firstly check bool to not handle with as int
         default_values[key] = None  # not int or string so None
     elif isinstance(key, int):  # if int
         # get average and round the amount down
         default_values[key] = int(reduce(lambda x, y: x + y, properties[key]) / len(properties[key]))
+    elif isinstance(key, float):  # if float
+        default_values[key] = reduce(lambda x, y: x + y, properties[key]) / len(properties[key])  # get average
     elif isinstance(key, str):  # if string
         default_values[key] = Counter(properties[key]).most_common(1)[0][0]  # get most common
     else:
@@ -76,3 +79,5 @@ for key, value in prepared_to_json_users.items():
     with open(str(key) + ".jsonl", "x") as file:  # create file
         for user in value:
             file.write('\n' + json.dumps(user))  # add users to file enter-separated
+
+print(isinstance(122.3, int))
