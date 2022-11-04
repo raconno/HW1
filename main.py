@@ -28,11 +28,11 @@ class User:  # create class to use set feature(ignore non-unique object)
         renovated_info = {}  # create new dictionary to have the same order of fields
         info['time_created'] = int(info['time_created'].timestamp())  # convert datetime object to int timestamp
         for key, value in default_values.items():  # go through all required fields
-            if not info.get(key):  # if user have such field remain it
+            if not info.get(key):  # if user does not add it with default value# if user have such field remain it
                 renovated_info[key] = value
-            else:  # if user does not add it with default value
+            else:  # if user have such field remain it
                 renovated_info[key] = info[key]
-        return renovated_info  # send only data dictionary
+        return renovated_info
 
 
 users = set()  # set of objects type User
@@ -48,17 +48,16 @@ for user in users:
     for key in user.info.keys():  # go through all keys of all users
         # add user`s property (if it has value) in list of appropriate key
         properties[key].append(user.info[key]) if user.info[key] is not None else None
-
 default_values = {}  # dictionary of all keys with default values according to task
 for key, value in properties.items():  # iterate through all possible keys
-    if isinstance(key, bool):  # firstly check bool to not handle with as int
+    if isinstance(value[0], bool):  # firstly check bool to not handle with as int
         default_values[key] = None
-    elif isinstance(key, int):
+    elif isinstance(value[0], int):
         # get average and round the amount down
-        default_values[key] = int(reduce(lambda x, y: x + y, value) / len(value))
-    elif isinstance(key, float):
-        default_values[key] = reduce(lambda x, y: x + y, value) / len(value)  # get average
-    elif isinstance(key, str):
+        default_values[key] = int(sum(value) / len(value))
+    elif isinstance(value[0], float):
+        default_values[key] = sum(value) / len(value)  # get average
+    elif isinstance(value[0], str):
         default_values[key] = Counter(value).most_common(1)[0][0]  # get most common
     else:
         default_values[key] = None
